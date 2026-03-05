@@ -1,0 +1,44 @@
+CREATE TABLE curriculo (
+  id SERIAL PRIMARY KEY,
+  candidato_id INT REFERENCES usuarios(id) ON DELETE SET NULL,
+  nome_arquivo VARCHAR(255),
+  caminho_arquivo VARCHAR(500),
+  data_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  tamanho_arquivo BIGINT,
+  formato_arquivo VARCHAR(50)
+);
+
+CREATE TABLE candidato (
+  id INT PRIMARY KEY REFERENCES usuarios(id) ON DELETE CASCADE,
+  cpf VARCHAR(20) UNIQUE,
+  endereco_id INT REFERENCES endereco(id),
+  objetivo_profissional TEXT,
+  pretensao_salarial NUMERIC(12,2),
+  disponibilidade VARCHAR(100),
+  curriculo_id INT REFERENCES curriculo(id)
+);
+
+CREATE TABLE formacao (
+  id SERIAL PRIMARY KEY,
+  candidato_id INT REFERENCES candidato(id) ON DELETE CASCADE,
+  instituicao VARCHAR(200),
+  curso VARCHAR(200),
+  nivel VARCHAR(80),
+  situacao VARCHAR(80),
+  data_inicio DATE,
+  data_conclusao DATE
+);
+
+CREATE TABLE experiencia (
+  id SERIAL PRIMARY KEY,
+  candidato_id INT REFERENCES candidato(id) ON DELETE CASCADE,
+  empresa VARCHAR(200),
+  cargo VARCHAR(150),
+  descricao TEXT,
+  data_inicio DATE,
+  data_fim DATE,
+  empregador_atual BOOLEAN DEFAULT FALSE,
+  trabalho_remoto BOOLEAN DEFAULT FALSE,
+  finalizada BOOLEAN DEFAULT FALSE
+);
+
