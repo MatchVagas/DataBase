@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS notificacoes(
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-CREATE TABLE IF NOT EXISTS endereço(
+CREATE TABLE IF NOT EXISTS endereco(
     estado VARCHAR(225),
     cidade VARCHAR(255),
     cep VARCHAR(255),
