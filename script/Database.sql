@@ -4,6 +4,13 @@ CREATE DATABASE IF NOT EXISTS matchvagas;
 # Seleciona a database matchvagas
 USE matchvagas;
 
+
+CREATE TABLE IF NOT EXISTS telefones(
+    id INT  PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    numero VARCHAR(255),
+ FOREIGN KEY (usuarios_id) REFERENCES usuarios(id)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS usuarios(
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     nome VARCHAR(255),
@@ -27,4 +34,12 @@ CREATE TABLE IF NOT EXISTS notificacoes(
     lida bool,
     usuario_id int not null ,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE IF NOT EXISTS endereço(
+    estado VARCHAR(225),
+    cidade VARCHAR(255),
+    cep VARCHAR(255),
+     FOREIGN KEY () REFERENCES (id)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;
