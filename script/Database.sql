@@ -4,7 +4,7 @@ CREATE DATABASE IF NOT EXISTS matchvagas;
 # Seleciona a database matchvagas
 USE matchvagas;
 
-CREATE TABLE paises
+CREATE TABLE IF NOT EXISTS paises
 (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     nome       VARCHAR(100) NOT NULL UNIQUE,
@@ -13,7 +13,7 @@ CREATE TABLE paises
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE estados
+CREATE TABLE IF NOT EXISTS estados
 (
     id      INT AUTO_INCREMENT PRIMARY KEY,
     nome    VARCHAR(100) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE estados
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de cidades (dependência total da chave primária)
-CREATE TABLE cidades
+CREATE TABLE IF NOT EXISTS cidades
 (
     id        INT AUTO_INCREMENT PRIMARY KEY,
     nome      VARCHAR(100) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE cidades
 -- ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de departamentos (para administradores)
-CREATE TABLE departamentos
+CREATE TABLE IF NOT EXISTS departamentos
 (
     id        INT AUTO_INCREMENT PRIMARY KEY,
     nome      VARCHAR(100) NOT NULL UNIQUE,
@@ -57,7 +57,7 @@ CREATE TABLE departamentos
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de níveis de escolaridade
-CREATE TABLE niveis_escolaridade
+CREATE TABLE IF NOT EXISTS niveis_escolaridade
 (
     id    INT AUTO_INCREMENT PRIMARY KEY,
     nome  VARCHAR(50) NOT NULL UNIQUE, -- 'Fundamental', 'Médio', 'Técnico', 'Graduação', 'Pós-graduação', 'Mestrado', 'Doutorado'
@@ -67,7 +67,7 @@ CREATE TABLE niveis_escolaridade
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de status de formação
-CREATE TABLE status_formacao
+CREATE TABLE IF NOT EXISTS status_formacao
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'Concluído', 'Em andamento', 'Trancado', 'Desistência'
@@ -76,7 +76,7 @@ CREATE TABLE status_formacao
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de tipos de notificação
-CREATE TABLE tipos_notificacao
+CREATE TABLE IF NOT EXISTS tipos_notificacao
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'info', 'sucesso', 'aviso', 'erro'
@@ -85,7 +85,7 @@ CREATE TABLE tipos_notificacao
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de status de candidatura
-CREATE TABLE status_candidatura
+CREATE TABLE IF NOT EXISTS status_candidatura
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'pendente', 'em_andamento', 'aprovado', 'rejeitado', 'cancelado'
@@ -94,7 +94,7 @@ CREATE TABLE status_candidatura
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de tipos de telefone
-CREATE TABLE tipos_telefone
+CREATE TABLE IF NOT EXISTS tipos_telefone
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'celular', 'residencial', 'comercial', 'recado'
@@ -103,7 +103,7 @@ CREATE TABLE tipos_telefone
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela do porta da empresa
-CREATE TABLE portes
+CREATE TABLE IF NOT EXISTS portes
 (
     id        INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
@@ -112,13 +112,29 @@ CREATE TABLE portes
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela do ramo de atuação da empresa
-CREATE TABLE ramos_atuacao
+CREATE TABLE IF NOT EXISTS ramos_atuacao
 (
     id        INT PRIMARY KEY,
     descricao VARCHAR(100) UNIQUE NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS modalidades (
+    id INT PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tipos_vaga (
+    id INT PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS status_vaga (
+    id INT PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS usuarios
 (
@@ -176,8 +192,8 @@ CREATE TABLE IF NOT EXISTS telefones
 
 CREATE TABLE IF NOT EXISTS telefones_usuario
 (
-    usuario_id  INT PRIMARY KEY NOT NULL,
-    telefone_id INT PRIMARY KEY NOT NULL,
+    usuario_id  INT NOT NULL,
+    telefone_id INT NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
     FOREIGN KEY (telefone_id) REFERENCES telefones (id),
     PRIMARY KEY (usuario_id, telefone_id)
@@ -187,8 +203,8 @@ CREATE TABLE IF NOT EXISTS telefones_usuario
 
 CREATE TABLE IF NOT EXISTS telefones_empresa
 (
-    empresa_id  INT PRIMARY KEY NOT NULL,
-    telefone_id INT PRIMARY KEY NOT NULL,
+    empresa_id  INT NOT NULL,
+    telefone_id INT NOT NULL,
     FOREIGN KEY (empresa_id) REFERENCES empresas (id),
     FOREIGN KEY (telefone_id) REFERENCES telefones (id),
     PRIMARY KEY (empresa_id, telefone_id)
@@ -199,13 +215,29 @@ CREATE TABLE IF NOT EXISTS telefones_empresa
 CREATE TABLE curriculo
 (
     id              INT PRIMARY KEY,
-    candidato_id    INT REFERENCES usuarios (id) ON DELETE SET NULL,
+    candidato_id    INT ,
     nome_arquivo    VARCHAR(255),
     caminho_arquivo VARCHAR(500),
     data_upload     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     tamanho_arquivo BIGINT,
     formato_arquivo VARCHAR(50),
-    FOREIGN KEY (candidato_id) REFERENCES usuarios (id)
+    FOREIGN KEY (candidato_id) REFERENCES usuarios (id) ON DELETE SET NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS enderecos
+(
+    id          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    logradouro  VARCHAR(255),
+    numero      VARCHAR(20),
+    complemento VARCHAR(100),
+    estado      INT,
+    cidade      INT,
+    bairro      VARCHAR(100),
+    cep         VARCHAR(9),
+    FOREIGN KEY (estado) REFERENCES estados (id),
+    FOREIGN KEY (cidade) REFERENCES cidades (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -279,22 +311,35 @@ CREATE TABLE IF NOT EXISTS notificacoes
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE vagas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    requisito TEXT,
+    tipo_vaga_id INT NOT NULL,
+    modalidade_vaga_id INT NOT NULL,
+    salario_min DECIMAL(10,2),
+    salario_max DECIMAL(10,2),
+    beneficios TEXT,
+    carga_horaria VARCHAR(50),
+    idade_minima INT,
+    idade_maxima INT,
+    nivel_escolaridade_minimo_id INT, -- nível mínimo exigido
+    area_atuacao VARCHAR(100),
+    data_publicacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_expiracao DATETIME,
+    status_vaga_id INT NOT NULL,
+    numero_vagas INT DEFAULT 1,
+    cidade_id INT, -- localização da vaga tabela cidade ou endereço
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ,
+    FOREIGN KEY (tipo_vaga_id) REFERENCES tipos_vaga(id) ,
+    FOREIGN KEY (modalidade_vaga_id) REFERENCES modalidades(id) ,
+    FOREIGN KEY (nivel_escolaridade_minimo_id) REFERENCES niveis_escolaridade(id) ,
+    FOREIGN KEY (status_vaga_id) REFERENCES status_vaga(id) ,
+    FOREIGN KEY (cidade_id) REFERENCES cidades(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS enderecos
-(
-    id          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    logradouro  VARCHAR(255),
-    numero      VARCHAR(20),
-    complemento VARCHAR(100),
-    estado      INT,
-    cidade      INT,
-    bairro      VARCHAR(100),
-    cep         VARCHAR(9),
-    FOREIGN KEY (estado) REFERENCES estados (id),
-    FOREIGN KEY (cidade) REFERENCES cidades (id)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE candidaturas
 (
@@ -313,4 +358,4 @@ CREATE TABLE candidaturas
         ON DELETE CASCADE,
     FOREIGN KEY (status_id)
         REFERENCES status_candidatura (id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
