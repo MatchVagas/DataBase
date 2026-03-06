@@ -120,6 +120,22 @@ CREATE TABLE ramos_atuacao
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+
+CREATE TABLE modalidades (
+    id INT PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE tipos_vaga (
+    id INT PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE status_vaga (
+    id INT PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS usuarios
 (
     id               INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -176,8 +192,8 @@ CREATE TABLE IF NOT EXISTS telefones
 
 CREATE TABLE IF NOT EXISTS telefones_usuario
 (
-    usuario_id  INT PRIMARY KEY NOT NULL,
-    telefone_id INT PRIMARY KEY NOT NULL,
+    usuario_id  INT NOT NULL,
+    telefone_id INT NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
     FOREIGN KEY (telefone_id) REFERENCES telefones (id),
     PRIMARY KEY (usuario_id, telefone_id)
@@ -187,8 +203,8 @@ CREATE TABLE IF NOT EXISTS telefones_usuario
 
 CREATE TABLE IF NOT EXISTS telefones_empresa
 (
-    empresa_id  INT PRIMARY KEY NOT NULL,
-    telefone_id INT PRIMARY KEY NOT NULL,
+    empresa_id  INT NOT NULL,
+    telefone_id INT NOT NULL,
     FOREIGN KEY (empresa_id) REFERENCES empresas (id),
     FOREIGN KEY (telefone_id) REFERENCES telefones (id),
     PRIMARY KEY (empresa_id, telefone_id)
@@ -199,13 +215,29 @@ CREATE TABLE IF NOT EXISTS telefones_empresa
 CREATE TABLE curriculo
 (
     id              INT PRIMARY KEY,
-    candidato_id    INT REFERENCES usuarios (id) ON DELETE SET NULL,
+    candidato_id    INT ,
     nome_arquivo    VARCHAR(255),
     caminho_arquivo VARCHAR(500),
     data_upload     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     tamanho_arquivo BIGINT,
     formato_arquivo VARCHAR(50),
-    FOREIGN KEY (candidato_id) REFERENCES usuarios (id)
+    FOREIGN KEY (candidato_id) REFERENCES usuarios (id) ON DELETE SET NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS enderecos
+(
+    id          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    logradouro  VARCHAR(255),
+    numero      VARCHAR(20),
+    complemento VARCHAR(100),
+    estado      INT,
+    cidade      INT,
+    bairro      VARCHAR(100),
+    cep         VARCHAR(9),
+    FOREIGN KEY (estado) REFERENCES estados (id),
+    FOREIGN KEY (cidade) REFERENCES cidades (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -279,22 +311,35 @@ CREATE TABLE IF NOT EXISTS notificacoes
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE vagas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    requisito TEXT,
+    tipo_vaga_id INT NOT NULL,
+    modalidade_vaga_id INT NOT NULL,
+    salario_min DECIMAL(10,2),
+    salario_max DECIMAL(10,2),
+    beneficios TEXT,
+    carga_horaria VARCHAR(50),
+    idade_minima INT,
+    idade_maxima INT,
+    nivel_escolaridade_minimo_id INT, -- nível mínimo exigido
+    area_atuacao VARCHAR(100),
+    data_publicacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_expiracao DATETIME,
+    status_vaga_id INT NOT NULL,
+    numero_vagas INT DEFAULT 1,
+    cidade_id INT, -- localização da vaga tabela cidade ou endereço
+    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ,
+    FOREIGN KEY (tipo_vaga_id) REFERENCES tipos_vaga(id) ,
+    FOREIGN KEY (modalidade_vaga_id) REFERENCES modalidades(id) ,
+    FOREIGN KEY (nivel_escolaridade_minimo_id) REFERENCES niveis_escolaridade(id) ,
+    FOREIGN KEY (status_vaga_id) REFERENCES status_vaga(id) ,
+    FOREIGN KEY (cidade_id) REFERENCES cidades(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS enderecos
-(
-    id          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    logradouro  VARCHAR(255),
-    numero      VARCHAR(20),
-    complemento VARCHAR(100),
-    estado      INT,
-    cidade      INT,
-    bairro      VARCHAR(100),
-    cep         VARCHAR(9),
-    FOREIGN KEY (estado) REFERENCES estados (id),
-    FOREIGN KEY (cidade) REFERENCES cidades (id)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE candidaturas
 (
@@ -313,4 +358,4 @@ CREATE TABLE candidaturas
         ON DELETE CASCADE,
     FOREIGN KEY (status_id)
         REFERENCES status_candidatura (id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
