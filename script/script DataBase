@@ -1,5 +1,5 @@
 CREATE TABLE curriculo (
-  id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   candidato_id INT REFERENCES usuarios(id) ON DELETE SET NULL,
   nome_arquivo VARCHAR(255),
   caminho_arquivo VARCHAR(500),
@@ -42,3 +42,53 @@ CREATE TABLE experiencia (
   finalizada BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE niveis_escolaridade (
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE modalidades (
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE tipos_vaga (
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE status_vaga (
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE NOT NULL
+);
+
+
+CREATE TABLE vagas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    requisito TEXT,
+    tipo_vaga_id INT NOT NULL,
+    modalidade_vaga_id INT NOT NULL,
+    salario_min DECIMAL(10,2),
+    salario_max DECIMAL(10,2),
+    beneficios TEXT,
+    carga_horaria VARCHAR(50),
+    idade_minima INT,
+    idade_maxima INT,
+    nivel_escolaridade_minimo_id INT, -- nível mínimo exigido
+    area_atuacao VARCHAR(100),
+    data_publicacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_expiracao DATETIME,
+    status_vaga_id INT NOT NULL,
+    numero_vagas INT DEFAULT 1,
+    cidade_id INT, -- localização da vaga tabela cidade ou endereço
+    FOREIGN KEY (empresa_id) REFERENCES empresa(id) ,
+    FOREIGN KEY (tipo_vaga_id) REFERENCES tipos_vaga(id) ,
+    FOREIGN KEY (modalidade_vaga_id) REFERENCES modalidades_vaga(id) ,
+    FOREIGN KEY (nivel_escolaridade_minimo_id) REFERENCES niveis_escolaridade(id) ,
+    FOREIGN KEY (status_vaga_id) REFERENCES status_vaga(id) ,
+    FOREIGN KEY (cidade_id) REFERENCES cidades(id) ,
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
