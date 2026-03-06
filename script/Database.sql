@@ -4,7 +4,7 @@ CREATE DATABASE IF NOT EXISTS matchvagas;
 # Seleciona a database matchvagas
 USE matchvagas;
 
-CREATE TABLE paises
+CREATE TABLE IF NOT EXISTS paises
 (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     nome       VARCHAR(100) NOT NULL UNIQUE,
@@ -13,7 +13,7 @@ CREATE TABLE paises
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE estados
+CREATE TABLE IF NOT EXISTS estados
 (
     id      INT AUTO_INCREMENT PRIMARY KEY,
     nome    VARCHAR(100) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE estados
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de cidades (dependência total da chave primária)
-CREATE TABLE cidades
+CREATE TABLE IF NOT EXISTS cidades
 (
     id        INT AUTO_INCREMENT PRIMARY KEY,
     nome      VARCHAR(100) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE cidades
 -- ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de departamentos (para administradores)
-CREATE TABLE departamentos
+CREATE TABLE IF NOT EXISTS departamentos
 (
     id        INT AUTO_INCREMENT PRIMARY KEY,
     nome      VARCHAR(100) NOT NULL UNIQUE,
@@ -57,7 +57,7 @@ CREATE TABLE departamentos
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de níveis de escolaridade
-CREATE TABLE niveis_escolaridade
+CREATE TABLE IF NOT EXISTS niveis_escolaridade
 (
     id    INT AUTO_INCREMENT PRIMARY KEY,
     nome  VARCHAR(50) NOT NULL UNIQUE, -- 'Fundamental', 'Médio', 'Técnico', 'Graduação', 'Pós-graduação', 'Mestrado', 'Doutorado'
@@ -67,7 +67,7 @@ CREATE TABLE niveis_escolaridade
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de status de formação
-CREATE TABLE status_formacao
+CREATE TABLE IF NOT EXISTS status_formacao
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'Concluído', 'Em andamento', 'Trancado', 'Desistência'
@@ -76,7 +76,7 @@ CREATE TABLE status_formacao
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de tipos de notificação
-CREATE TABLE tipos_notificacao
+CREATE TABLE IF NOT EXISTS tipos_notificacao
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'info', 'sucesso', 'aviso', 'erro'
@@ -85,7 +85,7 @@ CREATE TABLE tipos_notificacao
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de status de candidatura
-CREATE TABLE status_candidatura
+CREATE TABLE IF NOT EXISTS status_candidatura
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'pendente', 'em_andamento', 'aprovado', 'rejeitado', 'cancelado'
@@ -94,7 +94,7 @@ CREATE TABLE status_candidatura
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela de tipos de telefone
-CREATE TABLE tipos_telefone
+CREATE TABLE IF NOT EXISTS tipos_telefone
 (
     id   INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE -- 'celular', 'residencial', 'comercial', 'recado'
@@ -103,7 +103,7 @@ CREATE TABLE tipos_telefone
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela do porta da empresa
-CREATE TABLE portes
+CREATE TABLE IF NOT EXISTS portes
 (
     id        INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
@@ -112,7 +112,7 @@ CREATE TABLE portes
   COLLATE = utf8mb4_unicode_ci;
 
 -- Tabela do ramo de atuação da empresa
-CREATE TABLE ramos_atuacao
+CREATE TABLE IF NOT EXISTS ramos_atuacao
 (
     id        INT PRIMARY KEY,
     descricao VARCHAR(100) UNIQUE NOT NULL
@@ -121,17 +121,17 @@ CREATE TABLE ramos_atuacao
   COLLATE = utf8mb4_unicode_ci;
 
 
-CREATE TABLE modalidades (
+CREATE TABLE IF NOT EXISTS modalidades (
     id INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE tipos_vaga (
+CREATE TABLE IF NOT EXISTS tipos_vaga (
     id INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
 );
 
-CREATE TABLE status_vaga (
+CREATE TABLE IF NOT EXISTS status_vaga (
     id INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
 );
