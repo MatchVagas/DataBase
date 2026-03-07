@@ -220,8 +220,7 @@ CREATE TABLE curriculo
     caminho_arquivo VARCHAR(500),
     data_upload     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     tamanho_arquivo BIGINT,
-    formato_arquivo VARCHAR(50),
-    FOREIGN KEY (candidato_id) REFERENCES usuarios (id) ON DELETE SET NULL
+    formato_arquivo VARCHAR(50)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -250,7 +249,7 @@ CREATE TABLE candidatos
     objetivo_profissional TEXT,
     pretensao_salarial    NUMERIC(12, 2),
     disponibilidade       VARCHAR(100),
-    usurio_id             INT                            NOT NULL,
+    usuario_id             INT                            NOT NULL,
     curriculo_id          INT,
     FOREIGN KEY (curriculo_id) REFERENCES curriculo (id)
         ON DELETE CASCADE,
