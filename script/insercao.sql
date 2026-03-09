@@ -1,4 +1,9 @@
+-- =====================================================
+-- 0. SELECIONAR O BANCO DE DADOS MATCHVAGAS E INSERIR DADOS DE TESTE
+-- =====================================================
+
 use matchvagas;
+
 -- =====================================================
 -- 1. TABELAS INDEPENDENTES (SEM CHAVES ESTRANGEIRAS)
 -- =====================================================
