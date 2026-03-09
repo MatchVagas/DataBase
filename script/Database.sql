@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS usuarios
     id               INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     nome             VARCHAR(255),
     email            VARCHAR(255),
+    senha_hash       TEXT,
     dataNascimento   DATE,
     idade            INT,
     ativo            BOOLEAN,
@@ -212,19 +213,6 @@ CREATE TABLE IF NOT EXISTS telefones_empresa
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE curriculo
-(
-    id              INT PRIMARY KEY,
-    candidato_id    INT ,
-    nome_arquivo    VARCHAR(255),
-    caminho_arquivo VARCHAR(500),
-    data_upload     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    tamanho_arquivo BIGINT,
-    formato_arquivo VARCHAR(50)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
-
 CREATE TABLE IF NOT EXISTS enderecos
 (
     id          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -249,11 +237,26 @@ CREATE TABLE candidatos
     objetivo_profissional TEXT,
     pretensao_salarial    NUMERIC(12, 2),
     disponibilidade       VARCHAR(100),
-    usuario_id             INT                            NOT NULL,
-    curriculo_id          INT,
-    FOREIGN KEY (curriculo_id) REFERENCES curriculo (id)
-        ON DELETE CASCADE,
+    usuario_id             INT NOT NULL,
+    -- curriculo_id          INT,
+    -- FOREIGN KEY (curriculo_id) REFERENCES curriculo (id)
+    --    ON DELETE CASCADE,
     FOREIGN KEY (endereco_id) REFERENCES enderecos (id)
+        ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE curriculo
+(
+    id              INT PRIMARY KEY,
+    candidato_id    INT ,
+    nome_arquivo    VARCHAR(255),
+    caminho_arquivo VARCHAR(500),
+    data_upload     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tamanho_arquivo BIGINT,
+    formato_arquivo VARCHAR(50),
+    FOREIGN KEY (candidato_id) REFERENCES candidatos(id)
         ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
