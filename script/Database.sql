@@ -124,17 +124,23 @@ CREATE TABLE IF NOT EXISTS ramos_atuacao
 CREATE TABLE IF NOT EXISTS modalidades (
     id INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
-);
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS tipos_vaga (
     id INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
-);
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS status_vaga (
     id INT PRIMARY KEY,
     descricao VARCHAR(50) UNIQUE NOT NULL
-);
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS usuarios
 (
@@ -361,3 +367,20 @@ CREATE TABLE candidaturas
     FOREIGN KEY (status_id)
         REFERENCES status_candidatura (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabela para registro de logs e auditoria do sistema
+CREATE TABLE IF NOT EXISTS logs_eventos (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id    INT,
+    tabela_nome   VARCHAR(100) NOT NULL,
+    registro_id   INT,              -- O ID do registro afetado
+    acao          ENUM('INSERT', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT'),
+    descricao     TEXT,
+    dados_antigos LONGTEXT,
+    dados_novos   LONGTEXT,
+    data_evento   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE SET NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
