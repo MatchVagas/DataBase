@@ -128,7 +128,8 @@ INSERT INTO estados (nome, uf, pais_id) VALUES
 ('Santa Catarina', 'SC', 1),
 ('Pernambuco', 'PE', 1),
 ('Ceará', 'CE', 1),
-('Distrito Federal', 'DF', 1);
+('Distrito Federal', 'DF', 1),
+('Amazonas','AM',1);
 
 -- Inserir telefones (depende de tipos_telefone)
 INSERT INTO telefones (numero, tipo_telefone, wpp) VALUES
@@ -181,7 +182,8 @@ INSERT INTO cidades (nome, estado_id) VALUES
 ('Niterói', 2),
 ('Uberlândia', 3),
 ('Feira de Santana', 4),
-('Londrina', 5);
+('Londrina', 5),
+('Manaus',11);
 
 -- =====================================================
 -- 4. TABELAS QUE DEPENDEM DE ESTADOS E CIDADES
@@ -348,7 +350,8 @@ INSERT INTO vagas (empresa_id, titulo, descricao, requisito, tipo_vaga_id, modal
 (7, 'Engenheiro Civil', 'Gerenciamento de obras', 'CREA ativo', 1, 1, 8000.00, 12000.00, 'VT, VR', '44h semanais', 25, 55, 4, 'Engenharia', DATE_ADD(NOW(), INTERVAL 60 DAY), 1, 2, 7),
 (8, 'Advogado Trabalhista', 'Atuação em direito trabalhista', 'OAB ativa', 2, 3, 5000.00, 8000.00, 'Plano de saúde', '40h semanais', 25, 60, 5, 'Jurídico', DATE_ADD(NOW(), INTERVAL 45 DAY), 1, 1, 8),
 (9, 'Social Media', 'Gestão de redes sociais', 'Experiência com criação de conteúdo', 1, 2, 2500.00, 3500.00, 'VR, VT', '40h semanais', 20, 35, 3, 'Marketing', DATE_ADD(NOW(), INTERVAL 20 DAY), 1, 2, 9),
-(10, 'Motorista de Caminhão', 'Entregas regionais', 'CNH E', 1, 1, 3000.00, 4500.00, 'VT, VR', '44h semanais', 25, 50, 2, 'Logística', DATE_ADD(NOW(), INTERVAL 15 DAY), 1, 3, 10);
+(10, 'Motorista de Caminhão', 'Entregas regionais', 'CNH E', 1, 1, 3000.00, 4500.00, 'VT, VR', '44h semanais', 25, 50, 2, 'Logística', DATE_ADD(NOW(), INTERVAL 15 DAY), 1, 3, 10),
+(10, 'Motorista de Caminhão', 'Entregas regionais', 'CNH E', 1, 1, 3000.00, 4500.00, 'VT, VR', '44h semanais', 25, 50, 2, 'Logística', DATE_ADD(NOW(), INTERVAL 15 DAY), 1, 3, 11);
 
 -- =====================================================
 -- 10. TABELAS QUE DEPENDEM DE CANDIDATOS E VAGAS
