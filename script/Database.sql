@@ -1,5 +1,4 @@
-Terminal close -- exit!
-não existir ainda
+# Cria um schema se ele não existir ainda
 CREATE DATABASE IF NOT EXISTS matchvagas;
 
 # Seleciona a database matchvagas
