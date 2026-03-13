@@ -445,5 +445,170 @@ BEGIN
     
 END $$
 
+====YASMIM====
+
 DELIMITER ;
 
+-- =====================================================
+-- PROCEDURES PARA A TABELA `enderecos`
+-- =====================================================
+DELIMITER $$
+
+CREATE PROCEDURE sp_enderecos_insert(
+    IN p_logradouro VARCHAR(255),
+    IN p_numero VARCHAR(20),
+    IN p_completo VARCHAR(100),
+    IN p_estado INT,
+    IN p_cidade INT,
+    IN p_bairro VARCHAR(100),
+    IN p_cep  VARCHAR(19),
+    OUT p_id INT
+)
+BEGIN
+    INSERT INTO enderecos (lougradouro, numero, completo, estado, cidade, bairro, cep, id)
+    VALUES (p_lougradouro, p_numero, p_completo, p_estado, p_cidade, p_bairro, p_cep, p_id);
+    -- SET p_id = LAST_INSERT_ID();
+END$$
+
+CREATE PROCEDURE sp_enderecos_update(
+    IN p_logradouro varchar(255),
+    IN p_numero VARCHAR(20),
+    IN p_completo VARCHAR(100),
+    IN p_estado INT,
+    IN p_cidade INT,
+    IN p_bairro VARCHAR(100),
+    IN p_cep VARCHAR(19),
+    IN p_id INT TIMESTAMP
+)
+BEGIN
+    UPDATE enderecos
+    SET logradouro       = p_logradouro,
+        numero           = p_numero,
+        completo         = p_completo,
+        estado           = p_estado,
+        cidade           = p_cidade,
+        bairro           = p_bairro,
+        cep              = p_cep,
+        id               = p_id,
+    WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_enderecos_delete(IN p_id INT)
+BEGIN
+    DELETE FROM enderecos WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_enderecos_get_by_id(IN p_id INT)
+BEGIN
+    SELECT * FROM enderecos WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_enderecos_list_all()
+BEGIN
+    SELECT * FROM enderecos;
+END$$
+
+DELIMITER ;
+
+
+====YASMIM====
+
+DELIMITER ;
+
+-- =====================================================
+-- PROCEDURES PARA A TABELA `telefones`
+-- =====================================================
+DELIMITER $$
+
+CREATE PROCEDURE sp_telefones_insert(
+    IN p_numero VARCHAR(15),
+    IN p_tipo_telefone INT
+    IN p_wpp TINYINT(1),
+    OUT p_id INT
+)
+BEGIN
+    INSERT INTO telefones(numero, tipo telefone, wpp, id)
+    VALUES (p_numero, p_tipo_telefone, p_wpp, p_id);
+    -- SET p_id = LAST_INSERT_ID();
+END$$
+
+CREATE PROCEDURE sp_telefones_update(
+    IN p_numero VARCHAR(255),
+    IN p_tipo_telefone INT
+    IN p_wpp TINYINT(1),
+    IN p_id INT TIMESTAMP
+)
+BEGIN
+    UPDATE telefones
+    SET
+        numero          = p_numero,
+        bairro           = p_tipo_telefone,
+        cep              = p_wpp,
+        id               = p_id,
+    WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_telefones_delete(IN p_id INT)
+BEGIN
+    DELETE FROM telefone WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_telefones_get_by_id(IN p_id INT)
+BEGIN
+    SELECT * FROM telefones WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_telefones_list_all()
+BEGIN
+    SELECT * FROM telefones;
+END$$
+
+DELIMITER ;
+
+====YASMIM====
+
+DELIMITER ;
+
+-- =====================================================
+-- PROCEDURES PARA A TABELA `tipo_notificacao`
+-- =====================================================
+DELIMITER $$
+
+CREATE PROCEDURE sp_tipo_notificacao_insert(
+    IN p_nome VARCHAR(50),
+    OUT p_id INT
+)
+BEGIN
+    INSERT INTO tipo_notificacao (nome, id)
+    VALUES (p_tipo_notificacao, p_id);
+    -- SET p_id = LAST_INSERT_ID();
+END$$
+
+CREATE PROCEDURE sp_tipo_notificacao_update(
+    IN p_nome VARCHAR(50),
+    IN p_id INT TIMESTAMP
+)
+BEGIN
+    UPDATE tipo_notificacao
+    SET 
+      nome     = p_nome,
+      id       = p_id,
+    WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_tipo_notificacao_delete(IN p_id INT)
+BEGIN
+    DELETE FROM tipo_notificacao WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_tipo_notificacao_get_by_id(IN p_id INT)
+BEGIN
+    SELECT * FROM tipo_notificacao WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_tipo_notificacao_list_all()
+BEGIN
+    SELECT * FROM tipo_notificacao;
+END$$
+
+DELIMITER ;
