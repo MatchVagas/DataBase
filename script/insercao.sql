@@ -195,22 +195,22 @@ INSERT INTO cidades (nome, estado_id) VALUES
 -- =====================================================
 
 -- Inserir endereços (depende de estados e cidades)
-INSERT INTO enderecos (logradouro, numero, complemento, estado, cidade, bairro, cep) VALUES
-('Avenida Paulista', '1000', 'Sala 101', 1, 1, 'Bela Vista', '01310-100'),
-('Rua da Quitanda', '50', NULL, 2, 2, 'Centro', '20091-005'),
-('Avenida Afonso Pena', '2000', 'Apto 501', 3, 3, 'Centro', '30130-001'),
-('Rua Chile', '300', NULL, 4, 4, 'Comércio', '40010-000'),
-('Rua das Flores', '150', 'Casa', 5, 5, 'Centro', '80020-100'),
-('Avenida Ipiranga', '1000', 'Apto 202', 6, 6, 'Centro Histórico', '90010-001'),
-('Rua Felipe Schmidt', '500', 'Sala 5', 7, 7, 'Centro', '88010-001'),
-('Avenida Boa Viagem', '2000', 'Apto 1001', 8, 8, 'Boa Viagem', '51011-000'),
-('Rua Barão do Rio Branco', '800', NULL, 9, 9, 'Centro', '60010-001'),
-('SHS Quadra 6', '100', 'Bloco A', 10, 10, 'Asa Sul', '70322-000'),
-('Rua José Paulino', '500', NULL, 1, 11, 'Centro', '13010-000'),
-('Avenida Amaral Peixoto', '200', 'Sala 301', 2, 12, 'Centro', '24020-000'),
-('Rua Coronel Antônio Alves', '300', NULL, 3, 13, 'Centro', '38400-000'),
-('Avenida Getúlio Vargas', '400', 'Sala 10', 4, 14, 'Centro', '44010-000'),
-('Rua Minas Gerais', '600', 'Casa', 5, 15, 'Centro', '86010-000');
+INSERT INTO enderecos (id ,logradouro, numero, complemento, estado, cidade, bairro, cep) VALUES
+(1, 'Avenida Paulista', '1000', 'Sala 101', 1, 1, 'Bela Vista', '01310-100'),
+(2, 'Rua da Quitanda', '50', NULL, 2, 2, 'Centro', '20091-005'),
+(3, 'Avenida Afonso Pena', '2000', 'Apto 501', 3, 3, 'Centro', '30130-001'),
+(4, 'Rua Chile', '300', NULL, 4, 4, 'Comércio', '40010-000'),
+(5, 'Rua das Flores', '150', 'Casa', 5, 5, 'Centro', '80020-100'),
+(6, 'Avenida Ipiranga', '1000', 'Apto 202', 6, 6, 'Centro Histórico', '90010-001'),
+(7, 'Rua Felipe Schmidt', '500', 'Sala 5', 7, 7, 'Centro', '88010-001'),
+(8, 'Avenida Boa Viagem', '2000', 'Apto 1001', 8, 8, 'Boa Viagem', '51011-000'),
+(9, 'Rua Barão do Rio Branco', '800', NULL, 9, 9, 'Centro', '60010-001'),
+(10,'SHS Quadra 6', '100', 'Bloco A', 10, 10, 'Asa Sul', '70322-000'),
+(11, 'Rua José Paulino', '500', NULL, 1, 11, 'Centro', '13010-000'),
+(12, 'Avenida Amaral Peixoto', '200', 'Sala 301', 2, 12, 'Centro', '24020-000'),
+(13, 'Rua Coronel Antônio Alves', '300', NULL, 3, 13, 'Centro', '38400-000'),
+(14, 'Avenida Getúlio Vargas', '400', 'Sala 10', 4, 14, 'Centro', '44010-000'),
+(15, 'Rua Minas Gerais', '600', 'Casa', 5, 15, 'Centro', '86010-000');
 
 -- =====================================================
 -- 5. TABELAS QUE DEPENDEM DE USUÁRIOS E DEPARTAMENTOS
