@@ -94,6 +94,8 @@ BEGIN
 
         COMMIT;
     END IF;
+    INSERT INTO logs_eventos (usuario_id, tabela_nome, registro_id, acao,dados_novos)
+    VALUES (@usuario_logado, 'candidatos', p_id, 'UPDATE', v_dados_novos);
 END$$
 
 DELIMITER ;
@@ -162,6 +164,8 @@ BEGIN
         COMMIT;
     END IF;
 END$$
+  INSERT INTO logs_eventos (usuario_id, tabela_nome, registro_id, acao,dados_novos)
+    VALUES (@usuario_logado, 'formaçao', p_id, 'UPDATE', v_dados_novos);
 
 DELIMITER ;
 
