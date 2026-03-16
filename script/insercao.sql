@@ -115,8 +115,10 @@ INSERT INTO usuarios (nome, email, senha_hash, dataNascimento, idade, ativo, dat
 ('Lucia Ferreira', 'lucia.ferreira@email.com', '$2y$10$YourHashedPasswordHere6', '1993-09-25', 30, TRUE, NOW(), NULL),
 ('Roberto Almeida', 'roberto.almeida@email.com', '$2y$10$YourHashedPasswordHere7', '1987-12-05', 36, FALSE, NOW(), NULL),
 ('Fernanda Lima', 'fernanda.lima@email.com', '$2y$10$YourHashedPasswordHere8', '1991-04-12', 34, TRUE, NOW(), NULL),
-('Marcos Paulo', 'marcos.paulo@email.com', '$2y$10$YourHashedPasswordHere9', '1989-07-30', 36, TRUE, NOW(), NULL),
-('Juliana Mendes', 'juliana.mendes@email.com', '$2y$10$YourHashedPasswordHere10', '1994-11-05', 31, TRUE, NOW(), NULL);
+('Marcos Paulo', 'marcos.paulo@email.com', '$2y$10$YourHashedPasswordHere9', '1989-07-30', 36, TRUE, NOW(), NULL);
+
+-- teste da procedure
+call sp_usuarios_insert('Juliana Mendes', 'juliana.mendes@email.com', '$2y$10$YourHashedPasswordHere10', '1994-11-05', 31, TRUE, NOW(), NULL, @p_id);
 
 -- =====================================================
 -- 2. TABELAS QUE DEPENDEM APENAS DAS INDEPENDENTES
