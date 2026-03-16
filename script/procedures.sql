@@ -21,7 +21,8 @@ CREATE PROCEDURE sp_usuarios_insert(
 )
 BEGIN
     INSERT INTO usuarios (nome, email, senha_hash, dataNascimento, idade, ativo, dataCadastro, dataUltimoAcesso)
-    VALUES (p_nome, p_email, p_senha_hash, p_dataNascimento, p_idade, p_ativo, p_dataCadastro, p_dataUltimoAcesso);
+    VALUES (p_nome, p_email, p_senha_hash, p_dataNascimento, p_idade,
+            p_ativo, p_dataCadastro, p_dataUltimoAcesso);
     -- SET p_id = LAST_INSERT_ID();
 END$$
 
@@ -45,11 +46,14 @@ BEGIN
         ativo            = p_ativo,
         dataUltimoAcesso = p_dataUltimoAcesso
     WHERE id = p_id;
+
+
 END$$
 
 CREATE PROCEDURE sp_usuarios_delete(IN p_id INT)
 BEGIN
     DELETE FROM usuarios WHERE id = p_id;
+
 END$$
 
 CREATE PROCEDURE sp_usuarios_get_by_id(IN p_id INT)
@@ -208,86 +212,81 @@ DELIMITER $$
 -- Descrição: Insere uma nova vaga
 -- =============================================
 CREATE PROCEDURE sp_vaga_inserir(
-    IN p_empresa_id                     INT,
-    IN p_titulo                         VARCHAR(255),
-    IN p_descricao                      TEXT,
-    IN p_requisito                      TEXT,
-    IN p_tipo_vaga_id                   INT,
-    IN p_modalidade_vaga_id             INT,
-    IN p_salario_min                    DECIMAL(10,2),
-    IN p_salario_max                    DECIMAL(10,2),
-    IN p_beneficios                     TEXT,
-    IN p_carga_horaria                  VARCHAR(50),
-    IN p_idade_minima                   INT,
-    IN p_idade_maxima                   INT,
-    IN p_nivel_escolaridade_minimo_id   INT,
-    IN p_area_atuacao                   VARCHAR(100),
-    IN p_data_expiracao                 DATETIME,
-    IN p_status_vaga_id                 INT,
-    IN p_numero_vagas                   INT,
-    IN p_cidade_id                      INT,
-    
-    OUT p_novo_id                       INT,
-    OUT p_erro_mensagem                 VARCHAR(255)
+    IN p_empresa_id INT,
+    IN p_titulo VARCHAR(255),
+    IN p_descricao TEXT,
+    IN p_requisito TEXT,
+    IN p_tipo_vaga_id INT,
+    IN p_modalidade_vaga_id INT,
+    IN p_salario_min DECIMAL(10, 2),
+    IN p_salario_max DECIMAL(10, 2),
+    IN p_beneficios TEXT,
+    IN p_carga_horaria VARCHAR(50),
+    IN p_idade_minima INT,
+    IN p_idade_maxima INT,
+    IN p_nivel_escolaridade_minimo_id INT,
+    IN p_area_atuacao VARCHAR(100),
+    IN p_data_expiracao DATETIME,
+    IN p_status_vaga_id INT,
+    IN p_numero_vagas INT,
+    IN p_cidade_id INT,
+    OUT p_novo_id INT,
+    OUT p_erro_mensagem VARCHAR(255)
 )
 BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
-    BEGIN
-        SET p_erro_mensagem = 'Erro ao inserir vaga (violação de constraint ou erro de dados)';
-        SET p_novo_id = NULL;
-        ROLLBACK;
-    END;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            SET p_erro_mensagem = 'Erro ao inserir vaga (violação de constraint ou erro de dados)';
+            SET p_novo_id = NULL;
+            ROLLBACK;
+        END;
 
     SET p_erro_mensagem = NULL;
-    
+
     START TRANSACTION;
-    
-    INSERT INTO vagas (
-        empresa_id,
-        titulo,
-        descricao,
-        requisito,
-        tipo_vaga_id,
-        modalidade_vaga_id,
-        salario_min,
-        salario_max,
-        beneficios,
-        carga_horaria,
-        idade_minima,
-        idade_maxima,
-        nivel_escolaridade_minimo_id,
-        area_atuacao,
-        data_publicacao,
-        data_expiracao,
-        status_vaga_id,
-        numero_vagas,
-        cidade_id
-    ) VALUES (
-        p_empresa_id,
-        TRIM(p_titulo),
-        p_descricao,
-        p_requisito,
-        p_tipo_vaga_id,
-        p_modalidade_vaga_id,
-        p_salario_min,
-        p_salario_max,
-        p_beneficios,
-        p_carga_horaria,
-        p_idade_minima,
-        p_idade_maxima,
-        p_nivel_escolaridade_minimo_id,
-        TRIM(p_area_atuacao),
-        CURRENT_TIMESTAMP,
-        p_data_expiracao,
-        p_status_vaga_id,
-        COALESCE(p_numero_vagas, 1),
-        p_cidade_id
-    );
-    
+
+    INSERT INTO vagas (empresa_id,
+                       titulo,
+                       descricao,
+                       requisito,
+                       tipo_vaga_id,
+                       modalidade_vaga_id,
+                       salario_min,
+                       salario_max,
+                       beneficios,
+                       carga_horaria,
+                       idade_minima,
+                       idade_maxima,
+                       nivel_escolaridade_minimo_id,
+                       area_atuacao,
+                       data_publicacao,
+                       data_expiracao,
+                       status_vaga_id,
+                       numero_vagas,
+                       cidade_id)
+    VALUES (p_empresa_id,
+            TRIM(p_titulo),
+            p_descricao,
+            p_requisito,
+            p_tipo_vaga_id,
+            p_modalidade_vaga_id,
+            p_salario_min,
+            p_salario_max,
+            p_beneficios,
+            p_carga_horaria,
+            p_idade_minima,
+            p_idade_maxima,
+            p_nivel_escolaridade_minimo_id,
+            TRIM(p_area_atuacao),
+            CURRENT_TIMESTAMP,
+            p_data_expiracao,
+            p_status_vaga_id,
+            COALESCE(p_numero_vagas, 1),
+            p_cidade_id);
+
     SET p_novo_id = LAST_INSERT_ID();
-    
     COMMIT;
-    
+
 END $$
 
 
@@ -296,67 +295,66 @@ END $$
 -- Descrição: Atualiza dados de uma vaga existente
 -- =============================================
 CREATE PROCEDURE sp_vaga_atualizar(
-    IN p_id                             INT,
-    IN p_titulo                         VARCHAR(255),
-    IN p_descricao                      TEXT,
-    IN p_requisito                      TEXT,
-    IN p_tipo_vaga_id                   INT,
-    IN p_modalidade_vaga_id             INT,
-    IN p_salario_min                    DECIMAL(10,2),
-    IN p_salario_max                    DECIMAL(10,2),
-    IN p_beneficios                     TEXT,
-    IN p_carga_horaria                  VARCHAR(50),
-    IN p_idade_minima                   INT,
-    IN p_idade_maxima                   INT,
-    IN p_nivel_escolaridade_minimo_id   INT,
-    IN p_area_atuacao                   VARCHAR(100),
-    IN p_data_expiracao                 DATETIME,
-    IN p_status_vaga_id                 INT,
-    IN p_numero_vagas                   INT,
-    IN p_cidade_id                      INT,
-    
-    OUT p_sucesso                       BOOLEAN,
-    OUT p_erro_mensagem                 VARCHAR(255)
+    IN p_id INT,
+    IN p_titulo VARCHAR(255),
+    IN p_descricao TEXT,
+    IN p_requisito TEXT,
+    IN p_tipo_vaga_id INT,
+    IN p_modalidade_vaga_id INT,
+    IN p_salario_min DECIMAL(10, 2),
+    IN p_salario_max DECIMAL(10, 2),
+    IN p_beneficios TEXT,
+    IN p_carga_horaria VARCHAR(50),
+    IN p_idade_minima INT,
+    IN p_idade_maxima INT,
+    IN p_nivel_escolaridade_minimo_id INT,
+    IN p_area_atuacao VARCHAR(100),
+    IN p_data_expiracao DATETIME,
+    IN p_status_vaga_id INT,
+    IN p_numero_vagas INT,
+    IN p_cidade_id INT,
+    OUT p_sucesso BOOLEAN,
+    OUT p_erro_mensagem VARCHAR(255)
 )
 BEGIN
     DECLARE v_count INT DEFAULT 0;
-    
+
     SET p_sucesso = FALSE;
     SET p_erro_mensagem = NULL;
-    
+
     SELECT COUNT(*) INTO v_count FROM vagas WHERE id = p_id;
-    
+
     IF v_count = 0 THEN
         SET p_erro_mensagem = 'Vaga não encontrada';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = p_erro_mensagem;
     END IF;
-    
+
     START TRANSACTION;
-    
-    UPDATE vagas SET
-        titulo                         = TRIM(p_titulo),
-        descricao                      = p_descricao,
-        requisito                      = p_requisito,
-        tipo_vaga_id                   = p_tipo_vaga_id,
-        modalidade_vaga_id             = p_modalidade_vaga_id,
-        salario_min                    = p_salario_min,
-        salario_max                    = p_salario_max,
-        beneficios                     = p_beneficios,
-        carga_horaria                  = p_carga_horaria,
-        idade_minima                   = p_idade_minima,
-        idade_maxima                   = p_idade_maxima,
-        nivel_escolaridade_minimo_id   = p_nivel_escolaridade_minimo_id,
-        area_atuacao                   = TRIM(p_area_atuacao),
-        data_expiracao                 = p_data_expiracao,
-        status_vaga_id                 = p_status_vaga_id,
-        numero_vagas                   = COALESCE(p_numero_vagas, numero_vagas),
-        cidade_id                      = p_cidade_id,
-        data_publicacao                = data_publicacao   -- mantém a data original
+
+    UPDATE vagas
+    SET titulo                       = TRIM(p_titulo),
+        descricao                    = p_descricao,
+        requisito                    = p_requisito,
+        tipo_vaga_id                 = p_tipo_vaga_id,
+        modalidade_vaga_id           = p_modalidade_vaga_id,
+        salario_min                  = p_salario_min,
+        salario_max                  = p_salario_max,
+        beneficios                   = p_beneficios,
+        carga_horaria                = p_carga_horaria,
+        idade_minima                 = p_idade_minima,
+        idade_maxima                 = p_idade_maxima,
+        nivel_escolaridade_minimo_id = p_nivel_escolaridade_minimo_id,
+        area_atuacao                 = TRIM(p_area_atuacao),
+        data_expiracao               = p_data_expiracao,
+        status_vaga_id               = p_status_vaga_id,
+        numero_vagas                 = COALESCE(p_numero_vagas, numero_vagas),
+        cidade_id                    = p_cidade_id,
+        data_publicacao              = data_publicacao -- mantém a data original
     WHERE id = p_id;
-    
+
     SET p_sucesso = TRUE;
     COMMIT;
-    
+
 END $$
 
 
@@ -365,37 +363,37 @@ END $$
 -- Descrição: Remove uma vaga (soft ou hard delete)
 -- =============================================
 CREATE PROCEDURE sp_vaga_excluir(
-    IN p_id              INT,
-    OUT p_sucesso        BOOLEAN,
-    OUT p_erro_mensagem  VARCHAR(255)
+    IN p_id INT,
+    OUT p_sucesso BOOLEAN,
+    OUT p_erro_mensagem VARCHAR(255)
 )
 BEGIN
     DECLARE v_count INT DEFAULT 0;
-    
+
     SET p_sucesso = FALSE;
     SET p_erro_mensagem = NULL;
-    
+
     SELECT COUNT(*) INTO v_count FROM vagas WHERE id = p_id;
-    
+
     IF v_count = 0 THEN
         SET p_erro_mensagem = 'Vaga não encontrada';
     ELSE
         START TRANSACTION;
-        
+
         -- Se quiser soft-delete, altere status_vaga_id para um valor de "encerrada/excluída"
         -- Caso contrário, faça DELETE físico:
         DELETE FROM vagas WHERE id = p_id;
-        
+
         -- Alternativa soft-delete (comente/descomente conforme necessidade):
         -- UPDATE vagas 
         --    SET status_vaga_id = 99,   -- exemplo: 99 = excluída/inativa
         --        data_expiracao = NOW()
         --  WHERE id = p_id;
-        
+
         SET p_sucesso = TRUE;
         COMMIT;
     END IF;
-    
+
 END $$
 
 
@@ -404,48 +402,59 @@ END $$
 -- Descrição: Lista vagas com filtros básicos (exemplo prático)
 -- =============================================
 CREATE PROCEDURE sp_vaga_listar_simples(
-    IN p_empresa_id         INT,          -- NULL = todas
-    IN p_status_vaga_id     INT,          -- NULL = todos
-    IN p_cidade_id          INT,          -- NULL = todas
-    IN p_titulo_parcial     VARCHAR(100), -- filtro LIKE
-    IN p_limit              INT DEFAULT 50,
-    IN p_offset             INT DEFAULT 0
+    IN p_empresa_id INT, -- NULL = todas
+    IN p_status_vaga_id INT, -- NULL = todos
+    IN p_cidade_id INT, -- NULL = todas
+    IN p_titulo_parcial VARCHAR(100), -- filtro LIKE
+    IN p_limit INT,
+    IN p_offset INT
 )
 BEGIN
-    SELECT 
-        v.id,
-        v.titulo,
-        e.nome_fantasia         AS empresa,
-        tv.descricao            AS tipo_vaga,
-        mv.descricao            AS modalidade,
-        sv.descricao            AS status,
-        v.salario_min,
-        v.salario_max,
-        v.numero_vagas,
-        v.data_publicacao,
-        cid.nome                AS cidade,
-        est.uf
+    DECLARE v_limit INT DEFAULT 50;
+    DECLARE v_offset INT DEFAULT 0;
+
+    -- verifica se p_limit é NULL, se for usa o valor default
+    IF p_limit IS NOT NULL THEN
+        SET v_limit = p_limit;
+    END IF;
+
+    -- verifica se p_offset é NULL, se for usa o valor default
+    IF p_offset IS NOT NULL THEN
+        SET v_offset = p_offset;
+    END IF;
+
+    SELECT v.id,
+           v.titulo,
+           e.nome_fantasia AS empresa,
+           tv.descricao    AS tipo_vaga,
+           mv.descricao    AS modalidade,
+           sv.descricao    AS status,
+           v.salario_min,
+           v.salario_max,
+           v.numero_vagas,
+           v.data_publicacao,
+           cid.nome        AS cidade,
+           est.uf
     FROM vagas v
-    INNER JOIN empresas e          ON e.id = v.empresa_id
-    INNER JOIN tipos_vaga tv       ON tv.id = v.tipo_vaga_id
-    INNER JOIN modalidades mv      ON mv.id = v.modalidade_vaga_id
-    INNER JOIN status_vaga sv      ON sv.id = v.status_vaga_id
-    LEFT  JOIN cidades cid         ON cid.id = v.cidade_id
-    LEFT  JOIN estados est         ON est.id = cid.estado_id
-    
-    WHERE 1=1
-      AND (p_empresa_id         IS NULL OR v.empresa_id = p_empresa_id)
-      AND (p_status_vaga_id     IS NULL OR v.status_vaga_id = p_status_vaga_id)
-      AND (p_cidade_id          IS NULL OR v.cidade_id = p_cidade_id)
-      AND (p_titulo_parcial     IS NULL OR v.titulo LIKE CONCAT('%', TRIM(p_titulo_parcial), '%'))
-    
+             INNER JOIN empresas e ON e.id = v.empresa_id
+             INNER JOIN tipos_vaga tv ON tv.id = v.tipo_vaga_id
+             INNER JOIN modalidades mv ON mv.id = v.modalidade_vaga_id
+             INNER JOIN status_vaga sv ON sv.id = v.status_vaga_id
+             LEFT JOIN cidades cid ON cid.id = v.cidade_id
+             LEFT JOIN estados est ON est.id = cid.estado_id
+
+    WHERE 1 = 1
+      AND (p_empresa_id IS NULL OR v.empresa_id = p_empresa_id)
+      AND (p_status_vaga_id IS NULL OR v.status_vaga_id = p_status_vaga_id)
+      AND (p_cidade_id IS NULL OR v.cidade_id = p_cidade_id)
+      AND (p_titulo_parcial IS NULL OR v.titulo LIKE CONCAT('%', TRIM(p_titulo_parcial), '%'))
+
     ORDER BY v.data_publicacao DESC
-    LIMIT p_limit
-    OFFSET p_offset;
-    
+    LIMIT p_limit OFFSET p_offset;
+
 END $$
 
-====YASMIM====
+-- ====YASMIM====
 
 DELIMITER ;
 
@@ -457,39 +466,39 @@ DELIMITER $$
 CREATE PROCEDURE sp_enderecos_insert(
     IN p_logradouro VARCHAR(255),
     IN p_numero VARCHAR(20),
-    IN p_completo VARCHAR(100),
+    IN p_complemento VARCHAR(100),
     IN p_estado INT,
     IN p_cidade INT,
     IN p_bairro VARCHAR(100),
-    IN p_cep  VARCHAR(19),
+    IN p_cep VARCHAR(19),
     OUT p_id INT
 )
 BEGIN
-    INSERT INTO enderecos (lougradouro, numero, completo, estado, cidade, bairro, cep, id)
-    VALUES (p_lougradouro, p_numero, p_completo, p_estado, p_cidade, p_bairro, p_cep, p_id);
+    INSERT INTO enderecos (logradouro, numero, complemento, estado, cidade, bairro, cep, id)
+    VALUES (p_logradouro, p_numero, p_complemento, p_estado, p_cidade, p_bairro, p_cep, p_id);
     -- SET p_id = LAST_INSERT_ID();
 END$$
 
 CREATE PROCEDURE sp_enderecos_update(
     IN p_logradouro varchar(255),
     IN p_numero VARCHAR(20),
-    IN p_completo VARCHAR(100),
+    IN p_complemento VARCHAR(100),
     IN p_estado INT,
     IN p_cidade INT,
     IN p_bairro VARCHAR(100),
     IN p_cep VARCHAR(19),
-    IN p_id INT TIMESTAMP
+    IN p_id INT
 )
 BEGIN
     UPDATE enderecos
-    SET logradouro       = p_logradouro,
-        numero           = p_numero,
-        completo         = p_completo,
-        estado           = p_estado,
-        cidade           = p_cidade,
-        bairro           = p_bairro,
-        cep              = p_cep,
-        id               = p_id,
+    SET logradouro  = p_logradouro,
+        numero      = p_numero,
+        complemento = p_complemento,
+        estado      = p_estado,
+        cidade      = p_cidade,
+        bairro      = p_bairro,
+        cep         = p_cep,
+        id          = p_id
     WHERE id = p_id;
 END$$
 
@@ -511,9 +520,7 @@ END$$
 DELIMITER ;
 
 
-====YASMIM====
-
-DELIMITER ;
+-- ====YASMIM====
 
 -- =====================================================
 -- PROCEDURES PARA A TABELA `telefones`
@@ -522,35 +529,34 @@ DELIMITER $$
 
 CREATE PROCEDURE sp_telefones_insert(
     IN p_numero VARCHAR(15),
-    IN p_tipo_telefone INT
+    IN p_tipo_telefone INT,
     IN p_wpp TINYINT(1),
     OUT p_id INT
 )
 BEGIN
-    INSERT INTO telefones(numero, tipo telefone, wpp, id)
+    INSERT INTO telefones(numero, tipo_telefone, wpp, id)
     VALUES (p_numero, p_tipo_telefone, p_wpp, p_id);
     -- SET p_id = LAST_INSERT_ID();
 END$$
 
 CREATE PROCEDURE sp_telefones_update(
     IN p_numero VARCHAR(255),
-    IN p_tipo_telefone INT
+    IN p_tipo_telefone INT,
     IN p_wpp TINYINT(1),
-    IN p_id INT TIMESTAMP
+    IN p_id INT
 )
 BEGIN
     UPDATE telefones
-    SET
-        numero          = p_numero,
-        bairro           = p_tipo_telefone,
-        cep              = p_wpp,
-        id               = p_id,
+    SET numero        = p_numero,
+        tipo_telefone = p_tipo_telefone,
+        wpp           = p_wpp,
+        id            = p_id
     WHERE id = p_id;
 END$$
 
 CREATE PROCEDURE sp_telefones_delete(IN p_id INT)
 BEGIN
-    DELETE FROM telefone WHERE id = p_id;
+    DELETE FROM telefones WHERE id = p_id;
 END$$
 
 CREATE PROCEDURE sp_telefones_get_by_id(IN p_id INT)
@@ -565,9 +571,7 @@ END$$
 
 DELIMITER ;
 
-====YASMIM====
-
-DELIMITER ;
+-- ====YASMIM====
 
 -- =====================================================
 -- PROCEDURES PARA A TABELA `tipo_notificacao`
@@ -579,36 +583,35 @@ CREATE PROCEDURE sp_tipo_notificacao_insert(
     OUT p_id INT
 )
 BEGIN
-    INSERT INTO tipo_notificacao (nome, id)
-    VALUES (p_tipo_notificacao, p_id);
+    INSERT INTO tipos_notificacao (nome, id)
+    VALUES (p_nome, p_id);
     -- SET p_id = LAST_INSERT_ID();
 END$$
 
 CREATE PROCEDURE sp_tipo_notificacao_update(
     IN p_nome VARCHAR(50),
-    IN p_id INT TIMESTAMP
+    IN p_id INT
 )
 BEGIN
-    UPDATE tipo_notificacao
-    SET 
-      nome     = p_nome,
-      id       = p_id,
+    UPDATE tipos_notificacao
+    SET nome = p_nome,
+        id   = p_id
     WHERE id = p_id;
 END$$
 
 CREATE PROCEDURE sp_tipo_notificacao_delete(IN p_id INT)
 BEGIN
-    DELETE FROM tipo_notificacao WHERE id = p_id;
+    DELETE FROM tipos_notificacao WHERE id = p_id;
 END$$
 
 CREATE PROCEDURE sp_tipo_notificacao_get_by_id(IN p_id INT)
 BEGIN
-    SELECT * FROM tipo_notificacao WHERE id = p_id;
+    SELECT * FROM tipos_notificacao WHERE id = p_id;
 END$$
 
 CREATE PROCEDURE sp_tipo_notificacao_list_all()
 BEGIN
-    SELECT * FROM tipo_notificacao;
+    SELECT * FROM tipos_notificacao;
 END$$
 
 DELIMITER ;
