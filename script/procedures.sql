@@ -560,6 +560,44 @@ BEGIN
             p_cidade_id);
 
     SET p_novo_id = LAST_INSERT_ID();
+
+    -- Preparar log (dados novos)
+    SET v_dados_novos = JSON_OBJECT(
+        'id',                   p_novo_id,
+        'empresa_id',           p_empresa_id,
+        'titulo',               TRIM(p_titulo),
+        'descricao',            LEFT(p_descricao, 200),          -- limitar texto grande
+        'requisito',            LEFT(p_requisito, 200),
+        'tipo_vaga_id',         p_tipo_vaga_id,
+        'modalidade_vaga_id',   p_modalidade_vaga_id,
+        'salario_min',          p_salario_min,
+        'salario_max',          p_salario_max,
+        'beneficios',           LEFT(p_beneficios, 200),
+        'carga_horaria',        p_carga_horaria,
+        'cidade_id',            p_cidade_id,
+        'status_vaga_id',       p_status_vaga_id,
+        'data_publicacao',      CURRENT_TIMESTAMP,
+        'data_expiracao',       p_data_expiracao,
+        'numero_vagas',         COALESCE(p_numero_vagas, 1)
+    );
+
+    INSERT INTO logs_eventos (
+        usuario_id,
+        tabela_nome,
+        registro_id,
+        acao,
+        descricao,
+        dados_novos
+    )
+    VALUES (
+        @usuario_logado,
+        'vagas',
+        p_novo_id,
+        'INSERT',
+        'Criação de nova vaga',
+        v_dados_novos
+    );
+
     COMMIT;
 
 END $$
@@ -592,7 +630,23 @@ CREATE PROCEDURE sp_vaga_atualizar(
     OUT p_erro_mensagem VARCHAR(255)
 )
 BEGIN
-    DECLARE v_count INT DEFAULT 0;
+    DECLARE v_count                   INT DEFAULT 0;
+    DECLARE v_old_titulo              VARCHAR(255);
+    DECLARE v_old_descricao           TEXT;
+    DECLARE v_old_requisito           TEXT;
+    DECLARE v_old_tipo_vaga_id        INT;
+    DECLARE v_old_modalidade_vaga_id  INT;
+    DECLARE v_old_salario_min         DECIMAL(10,2);
+    DECLARE v_old_salario_max         DECIMAL(10,2);
+    DECLARE v_old_beneficios          TEXT;
+    DECLARE v_old_carga_horaria       VARCHAR(50);
+    DECLARE v_old_cidade_id           INT;
+    DECLARE v_old_status_vaga_id      INT;
+    DECLARE v_old_data_expiracao      DATETIME;
+    DECLARE v_old_numero_vagas        INT;
+
+    DECLARE v_dados_antigos           JSON;
+    DECLARE v_dados_novos             JSON;
 
     SET p_sucesso = FALSE;
     SET p_erro_mensagem = NULL;
@@ -626,6 +680,56 @@ BEGIN
         cidade_id                    = p_cidade_id,
         data_publicacao              = data_publicacao -- mantém a data original
     WHERE id = p_id;
+
+    -- Preparar JSONs de log (limitando textos longos)
+    SET v_dados_antigos = JSON_OBJECT(
+        'id',                   p_id,
+        'titulo',               v_old_titulo,
+        'descricao',            LEFT(v_old_descricao, 200),
+        'requisito',            LEFT(v_old_requisito, 200),
+        'tipo_vaga_id',         v_old_tipo_vaga_id,
+        'modalidade_vaga_id',   v_old_modalidade_vaga_id,
+        'salario_min',          v_old_salario_min,
+        'salario_max',          v_old_salario_max,
+        'cidade_id',            v_old_cidade_id,
+        'status_vaga_id',       v_old_status_vaga_id,
+        'data_expiracao',       v_old_data_expiracao,
+        'numero_vagas',         v_old_numero_vagas
+    );
+
+    SET v_dados_novos = JSON_OBJECT(
+        'id',                   p_id,
+        'titulo',               TRIM(p_titulo),
+        'descricao',            LEFT(p_descricao, 200),
+        'requisito',            LEFT(p_requisito, 200),
+        'tipo_vaga_id',         p_tipo_vaga_id,
+        'modalidade_vaga_id',   p_modalidade_vaga_id,
+        'salario_min',          p_salario_min,
+        'salario_max',          p_salario_max,
+        'cidade_id',            p_cidade_id,
+        'status_vaga_id',       p_status_vaga_id,
+        'data_expiracao',       p_data_expiracao,
+        'numero_vagas',         COALESCE(p_numero_vagas, v_old_numero_vagas)
+    );
+
+    INSERT INTO logs_eventos (
+        usuario_id,
+        tabela_nome,
+        registro_id,
+        acao,
+        descricao,
+        dados_antigos,
+        dados_novos
+    )
+    VALUES (
+        @usuario_logado,
+        'vagas',
+        p_id,
+        'UPDATE',
+        'Atualização de vaga',
+        v_dados_antigos,
+        v_dados_novos
+    );
 
     SET p_sucesso = TRUE;
     COMMIT;
