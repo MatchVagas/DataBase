@@ -192,5 +192,61 @@ DELIMITER ;
 
 
 
+DELIMITER $$
 
+DROP TRIGGER IF EXISTS before_insert_vagas_validador$$
+CREATE TRIGGER before_insert_vagas_validador
+BEFORE INSERT ON vagas
+FOR EACH ROW
+BEGIN
+    -- Salários
+    IF NEW.salario_min IS NOT NULL AND NEW.salario_max IS NOT NULL 
+       AND NEW.salario_min > NEW.salario_max THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Salário mínimo > salário máximo';
+    END IF;
+
+    -- Idade
+    IF NEW.idade_minima IS NOT NULL AND NEW.idade_maxima IS NOT NULL 
+       AND NEW.idade_minima > NEW.idade_maxima THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Idade mínima > idade máxima';
+    END IF;
+
+    -- Datas
+    IF NEW.data_publicacao IS NULL THEN
+        SET NEW.data_publicacao = CURRENT_TIMESTAMP;
+    END IF;
+
+    IF NEW.data_expiracao IS NOT NULL 
+       AND NEW.data_expiracao < NEW.data_publicacao THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Data expiração < data publicação';
+    END IF;
+END$$
+
+DROP TRIGGER IF EXISTS before_update_vagas_validador$$
+CREATE TRIGGER before_update_vagas_validador
+BEFORE UPDATE ON vagas
+FOR EACH ROW
+BEGIN
+    -- Salários
+    IF NEW.salario_min IS NOT NULL AND NEW.salario_max IS NOT NULL 
+       AND NEW.salario_min > NEW.salario_max THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Salário mínimo > salário máximo';
+    END IF;
+
+    -- Idade
+    IF NEW.idade_minima IS NOT NULL AND NEW.idade_maxima IS NOT NULL 
+       AND NEW.idade_minima > NEW.idade_maxima THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Idade mínima > idade máxima';
+    END IF;
+
+    -- Datas
+    SET NEW.data_publicacao = OLD.data_publicacao;
+
+    IF NEW.data_expiracao IS NOT NULL 
+       AND NEW.data_expiracao < NEW.data_publicacao THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Data expiração < data publicação';
+    END IF;
+END$$
+
+DELIMITER ;
                                                
