@@ -33,4 +33,164 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_candidato
+BEFORE INSERT ON candidato
+FOR EACH ROW
+BEGIN
+    DECLARE cnt INT;
+
+    -- Verifica se já existe o usuario_id
+    SELECT COUNT(*) INTO cnt
+    FROM candidato
+    WHERE usuario_id = NEW.usuario_id;
+
+    -- Se já existir, gera um erro
+    IF cnt > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'usuario_id já existe na tabela candidato. Inserção não permitida.';
+    END IF;
+END;
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_formacoes
+BEFORE INSERT ON formacoes
+FOR EACH ROW
+BEGIN
+    -- Valida se a data_fim não é anterior à data_inicio
+    IF NEW.data_fim IS NOT NULL AND NEW.data_fim < NEW.data_inicio THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Data de término não pode ser anterior à data de início.';
+    END IF;
+
+    -- Valida consistência da situação
+    -- Exemplo: se situação = 'concluído', data_fim deve estar preenchida
+    IF NEW.situacao = 'concluído' AND NEW.data_fim IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Formação marcada como concluída deve ter data_fim preenchida.';
+    END IF;
+
+    -- Exemplo: se situação = 'em andamento', data_fim deve ser nula
+    IF NEW.situacao = 'em andamento' AND NEW.data_fim IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Formação em andamento não pode ter data_fim preenchida.';
+    END IF;
+END;
+
+CREATE TRIGGER before_update_formacoes
+BEFORE UPDATE ON formacoes
+FOR EACH ROW
+BEGIN
+    -- Valida se a data_fim não é anterior à data_inicio
+    IF NEW.data_fim IS NOT NULL AND NEW.data_fim < NEW.data_inicio THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Data de término não pode ser anterior à data de início.';
+    END IF;
+
+    -- Valida consistência da situação
+    -- Exemplo: se situação = 'concluído', data_fim deve estar preenchida
+    IF NEW.situacao = 'concluído' AND NEW.data_fim IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Formação marcada como concluída deve ter data_fim preenchida.';
+    END IF;
+
+    -- Exemplo: se situação = 'em andamento', data_fim deve ser nula
+    IF NEW.situacao = 'em andamento' AND NEW.data_fim IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Formação em andamento não pode ter data_fim preenchida.';
+    END IF;
+END;
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_experiencias
+BEFORE INSERT ON experiencias
+FOR EACH ROW
+BEGIN
+    -- Valida se a data_fim não é anterior à data_inicio
+    IF NEW.data_fim IS NOT NULL AND NEW.data_fim < NEW.data_inicio THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Data de término não pode ser anterior à data de início.';
+    END IF;
+
+    -- Valida consistência com emprego atual
+    IF NEW.emprego_atual = TRUE AND NEW.data_fim IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Emprego atual não pode ter data de término preenchida.';
+    END IF;
+
+    IF NEW.emprego_atual = FALSE AND NEW.data_fim IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Emprego encerrado deve ter data de término preenchida.';
+    END IF;
+END;
+
+CREATE TRIGGER before_update_experiencias
+BEFORE UPDATE ON experiencias
+FOR EACH ROW
+BEGIN
+    -- Valida se a data_fim não é anterior à data_inicio
+    IF NEW.data_fim IS NOT NULL AND NEW.data_fim < NEW.data_inicio THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Data de término não pode ser anterior à data de início.';
+    END IF;
+
+    -- Valida consistência com emprego atual
+    IF NEW.emprego_atual = TRUE AND NEW.data_fim IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Emprego atual não pode ter data de término preenchida.';
+    END IF;
+
+    IF NEW.emprego_atual = FALSE AND NEW.data_fim IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Emprego encerrado deve ter data de término preenchida.';
+    END IF;
+END;
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_candidaturas
+BEFORE INSERT ON candidaturas
+FOR EACH ROW
+BEGIN
+    DECLARE vaga_status VARCHAR(20);
+
+    -- Busca o status da vaga
+    SELECT status INTO vaga_status
+    FROM vagas
+    WHERE id = NEW.vaga_id;
+
+    -- Se a vaga estiver encerrada, bloqueia a inserção
+    IF vaga_status = 'encerrada' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Não é permitido candidatar-se a uma vaga encerrada.';
+    END IF;
+END;
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_update_candidaturas
+BEFORE UPDATE ON candidaturas
+FOR EACH ROW
+BEGIN
+    -- Atualiza automaticamente a data_atualizacao com o momento atual
+    SET NEW.data_atualizacao = NOW();
+END;
+
+DELIMITER ;
+
+
+
+
                                                
