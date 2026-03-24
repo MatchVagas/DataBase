@@ -518,6 +518,8 @@ BEGIN
 
     SET p_erro_mensagem = NULL;
 
+    DECLARE v_dados_novos JSON;
+
     START TRANSACTION;
 
     INSERT INTO vagas (empresa_id,
