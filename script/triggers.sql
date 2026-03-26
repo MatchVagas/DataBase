@@ -37,14 +37,14 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE TRIGGER before_insert_candidato
-BEFORE INSERT ON candidato
+BEFORE INSERT ON candidatos
 FOR EACH ROW
 BEGIN
     DECLARE cnt INT;
 
     -- Verifica se já existe o usuario_id
     SELECT COUNT(*) INTO cnt
-    FROM candidato
+    FROM candidatos
     WHERE usuario_id = NEW.usuario_id;
 
     -- Se já existir, gera um erro
@@ -58,6 +58,7 @@ DELIMITER ;
 
 DELIMITER $$
 
+DROP TRIGGER IF EXISTS before_insert_formacoes$$
 CREATE TRIGGER before_insert_formacoes
 BEFORE INSERT ON formacoes
 FOR EACH ROW

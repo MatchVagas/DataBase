@@ -509,6 +509,9 @@ CREATE PROCEDURE sp_vaga_inserir(
     OUT p_erro_mensagem VARCHAR(255)
 )
 BEGIN
+
+    DECLARE v_dados_novos JSON;
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
             SET p_erro_mensagem = 'Erro ao inserir vaga (violação de constraint ou erro de dados)';
@@ -517,8 +520,6 @@ BEGIN
         END;
 
     SET p_erro_mensagem = NULL;
-
-    DECLARE v_dados_novos JSON;
 
     START TRANSACTION;
 
@@ -842,32 +843,60 @@ DELIMITER ;
 -- =====================================================
 -- PROCEDURES PARA A TABELA `enderecos`
 -- =====================================================
+DELIMITER $$
+
+CREATE PROCEDURE sp_enderecos_insert(
+    IN p_logradouro VARCHAR(255),
+    IN p_numero VARCHAR(20),
+    IN p_complemento VARCHAR(100),
+    IN p_estado INT,
+    IN p_cidade INT,
+    IN p_bairro VARCHAR(100),
+    IN p_cep VARCHAR(19),
+    OUT p_id INT
+)
 BEGIN
     -- armazena os novos dados em um json
-    DECLARE v_dados_novos ENDERECO;
+    DECLARE v_dados_novos JSON;
 
-    INSERT INTO endereco (id,)
-    VALUES (p_id, p_lagradouro, p_numero_, p_completo, p_estado,
+    INSERT INTO enderecos (logradouro, numero, complemento, estado, cidade, bairro, cep, id)
+    VALUES (p_id, p_logradouro, p_numero, p_complemento, p_estado,
             p_cidade, p_bairro, p_cep);
 
     SET p_id = LAST_INSERT_ID();
 
-    SET v_dados_novos = ENDERECO(
+    SET v_dados_novos = JSON_OBJECT(
         'id', p_id,
-        'lagradouro', p_lagradouro,
+        'lagradouro', p_logradouro,
         'numero' , p_numero,
-        'completo', p_completo,
+        'completo', p_complemento,
         'estado', p_estado,
         'cidade', p_cidade,
         'bairro' , p_bairro,
-        'cep', p_cep,
+        'cep', p_cep
     );
 
-    INSERT INTO logs_endereco (endereco_id, p_ladrouro, p_numero, p_completo, p_estado, p_cidade, p_bairro, p_cep)
-    VALUES (@endereco_, 'endereco', p_id, 'INSERT','Operação INSERT', v_dados_novos);
-
+    INSERT INTO logs_eventos (usuario_id, tabela_nome, registro_id, acao, descricao, dados_novos)
+    VALUES (@usuario_logado, 'endereco', p_id, 'INSERT','Operação INSERT', v_dados_novos);
 
 END$$
+
+CREATE PROCEDURE sp_enderecos_delete(IN p_id INT)
+BEGIN
+    DELETE FROM enderecos WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_enderecos_get_by_id(IN p_id INT)
+BEGIN
+    SELECT * FROM enderecos WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_enderecos_list_all()
+BEGIN
+    SELECT * FROM enderecos;
+END$$
+
+DELIMITER ;
 
 -- ====YASMIM====
 
@@ -875,25 +904,61 @@ END$$
 -- PROCEDURES PARA A TABELA `telefones`
 -- =====================================================
 DELIMITER $$
-    BEGIN
+
+CREATE PROCEDURE sp_telefones_insert(
+    IN p_numero VARCHAR(15),
+    IN p_tipo_telefone INT,
+    IN p_wpp TINYINT(1),
+    OUT p_id INT
+)
+BEGIN
     -- armazena os novos dados em um json
-    DECLARE v_dados_novos ;
+    DECLARE v_dados_novos JSON;
 
     INSERT INTO telefones ()
     VALUES (p_id,  p_numero, tipo_telefone, p_wpp);
     SET p_id = LAST_INSERT_ID();
 
-    SET v_dados_novos = ENDERECO(
+    SET v_dados_novos = JSON_OBJECT(
         'id', p_id,
         'numero' , p_numero,
         'tipo_telefone' , p_tipo_telefone,
-        'wpp' , p_wpp,
+        'wpp' , p_wpp
     );
 
-    INSERT INTO logs_eventos (telefone_id, p_numero, p_tipo_telefone, p_wpp)
-    VALUES (@usuario_logado, 'endereco', p_id, 'INSERT','Operação INSERT', v_dados_novos);
+    INSERT INTO logs_eventos(usuario_id,tabela_nome, registro_id, acao,descricao,dados_novos)
+    VALUES (@usuario_logado, 'telefones', p_id, 'INSERT','Operação INSERT', v_dados_novos);
 
+END$$
 
+CREATE PROCEDURE sp_telefones_update(
+    IN p_numero VARCHAR(255),
+    IN p_tipo_telefone INT,
+    IN p_wpp TINYINT(1),
+    IN p_id INT
+)
+BEGIN
+    UPDATE telefones
+    SET numero        = p_numero,
+        tipo_telefone = p_tipo_telefone,
+        wpp           = p_wpp,
+        id            = p_id
+    WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_telefones_delete(IN p_id INT)
+BEGIN
+    DELETE FROM telefones WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_telefones_get_by_id(IN p_id INT)
+BEGIN
+    SELECT * FROM telefones WHERE id = p_id;
+END$$
+
+CREATE PROCEDURE sp_telefones_list_all()
+BEGIN
+    SELECT * FROM telefones;
 END$$
 
 DELIMITER ;
@@ -904,25 +969,132 @@ DELIMITER ;
 -- PROCEDURES PARA A TABELA `tipo_notificacao`
 -- =====================================================
 DELIMITER $$
+
+CREATE PROCEDURE sp_tipo_notificacao_insert(
+    IN p_nome VARCHAR(50),
+    OUT p_id INT
+)
 BEGIN
     -- armazena os novos dados em um json
     DECLARE v_dados_novos JSON;
 
-    INSERT INTO tipo_notificacao ()
-    VALUES (p_id, p_nome,);
+    INSERT INTO tipos_notificacao (nome, id)
+    VALUES (p_nome, p_id);
 
     SET p_id = LAST_INSERT_ID();
 
     SET v_dados_novos = JSON_OBJECT(
         'id', p_id,
-        'nome', p_nome,
+        'nome', p_nome
     );
 
-    INSERT INTO logs_eventos (id, nome)
-    VALUES (@notificacao, 'tipo_notificacao', p_id, 'INSERT','Operação INSERT', v_dados_novos);
-
+    INSERT INTO logs_eventos(usuario_id, tabela_nome, registro_id, acao, descricao, dados_novos)
+    VALUES (@usuario_logado, 'tipo_notificacao', p_id, 'INSERT','Operação INSERT', v_dados_novos);
 
 END$$
+
+DELIMITER ;
+
+-- parte de alguém
+
+DELIMITER $$
+
+CREATE PROCEDURE sp_candidato_insert(
+    IN  p_cpf VARCHAR(20),
+    IN  p_endereco_id INT,
+    IN  p_objetivo_profissional TEXT,
+    IN  p_pretensao_salarial DECIMAL(10,2),
+    IN  p_disponibilidade VARCHAR(50),
+    IN  p_usuario_id INT,
+    OUT p_id INT
+)
+BEGIN
+
+    DECLARE v_dados_novos JSON;
+
+    INSERT INTO candidatos (cpf, endereco_id, objetivo_profissional, pretensao_salarial, disponibilidade, usuario_id)
+    VALUES (p_cpf, p_endereco_id, p_objetivo_profissional, p_pretensao_salarial, p_disponibilidade, p_usuario_id);
+
+    SET p_id = LAST_INSERT_ID();
+
+    SET v_dados_novos = JSON_OBJECT(
+        'id', p_id,
+        'cpf', p_cpf,
+        'endereco_id', p_endereco_id,
+        'objetivo_profissional', p_objetivo_profissional,
+        'pretensao_salarial', p_pretensao_salarial,
+        'disponibilidade', p_disponibilidade,
+        'usuario_id', p_usuario_id
+    );
+
+    INSERT INTO logs_eventos (usuario_id, tabela_nome, registro_id, acao, descricao, dados_novos)
+    VALUES (COALESCE(@usuario_logado, NULL), 'candidatos', p_id, 'INSERT', 'Operação INSERT', v_dados_novos);
+END$$
+
+CREATE PROCEDURE sp_candidato_update(
+    IN p_id INT,
+    IN p_cpf VARCHAR(20),
+    IN p_endereco_id INT,
+    IN p_objetivo_profissional TEXT,
+    IN p_pretensao_salarial DECIMAL(10,2),
+    IN p_disponibilidade VARCHAR(50),
+    IN p_usuario_id INT
+)
+BEGIN
+    -- dados antigos
+    DECLARE v_old_cpf VARCHAR(20);
+    DECLARE v_old_endereco_id INT;
+    DECLARE v_old_objetivo_profissional TEXT;
+    DECLARE v_old_pretensao_salarial DECIMAL(10,2);
+    DECLARE v_old_disponibilidade VARCHAR(50);
+    DECLARE v_old_usuario_id INT;
+    DECLARE v_dados_antigos JSON;
+    DECLARE v_dados_novos JSON;
+    DECLARE v_count INT;
+
+    SELECT COUNT(*) INTO v_count FROM candidatos WHERE id = p_id;
+    IF v_count = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Candidato não encontrado';
+    END IF;
+
+    SELECT cpf, endereco_id, objetivo_profissional, pretensao_salarial, disponibilidade, usuario_id
+    INTO v_old_cpf, v_old_endereco_id, v_old_objetivo_profissional, v_old_pretensao_salarial, v_old_disponibilidade, v_old_usuario_id
+    FROM candidatos WHERE id = p_id;
+
+    SET v_dados_antigos = JSON_OBJECT(
+        'id', p_id,
+        'cpf', v_old_cpf,
+        'endereco_id', v_old_endereco_id,
+        'objetivo_profissional', v_old_objetivo_profissional,
+        'pretensao_salarial', v_old_pretensao_salarial,
+        'disponibilidade', v_old_disponibilidade,
+        'usuario_id', v_old_usuario_id
+    );
+
+    UPDATE candidatos
+    SET cpf = p_cpf,
+        endereco_id = p_endereco_id,
+        objetivo_profissional = p_objetivo_profissional,
+        pretensao_salarial = p_pretensao_salarial,
+        disponibilidade = p_disponibilidade,
+        usuario_id = p_usuario_id
+    WHERE id = p_id;
+
+    SET v_dados_novos = JSON_OBJECT(
+        'id', p_id,
+        'cpf', p_cpf,
+        'endereco_id', p_endereco_id,
+        'objetivo_profissional', p_objetivo_profissional,
+        'pretensao_salarial', p_pretensao_salarial,
+        'disponibilidade', p_disponibilidade,
+        'usuario_id', p_usuario_id
+    );
+
+    INSERT INTO logs_eventos (usuario_id, tabela_nome, registro_id, acao, dados_antigos, dados_novos)
+    VALUES (COALESCE(@usuario_logado, NULL), 'candidatos', p_id, 'UPDATE', v_dados_antigos, v_dados_novos);
+END$$
+
+DELIMITER ;
 
 DELIMITER $$
 
