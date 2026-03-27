@@ -34,8 +34,14 @@ END$$
 
 DELIMITER ;
 
+
+-- =====================================================
+-- 3. TRIGGERS PARA A TABELA `candidatos`
+-- =====================================================
+
 DELIMITER $$
 
+DROP TRIGGER IF NOT EXISTS before_insert_candidato$$
 CREATE TRIGGER before_insert_candidato
 BEFORE INSERT ON candidatos
 FOR EACH ROW
